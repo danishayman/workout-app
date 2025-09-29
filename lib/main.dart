@@ -31,9 +31,65 @@ class MyApp extends StatelessWidget {
       title: 'FitTrack',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.white,
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        colorScheme: const ColorScheme.dark(
+          primary: Colors.white,
+          onPrimary: Colors.black,
+          secondary: Colors.white70,
+          onSecondary: Colors.black,
+          surface: Color(0xFF121212),
+          onSurface: Colors.white,
+          background: Color(0xFF000000),
+          onBackground: Colors.white,
+          error: Colors.redAccent,
+          onError: Colors.black,
+        ),
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          foregroundColor: Colors.white,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.white,
+            side: const BorderSide(color: Colors.white24),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+        inputDecorationTheme: const InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.white24),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.white24),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.white),
+          ),
+          labelStyle: TextStyle(color: Colors.white70),
+          hintStyle: TextStyle(color: Colors.white54),
+        ),
+      ),
+      themeMode: ThemeMode.dark, // Force dark mode
       home: const AuthWrapper(),
     );
   }

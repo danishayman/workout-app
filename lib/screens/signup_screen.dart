@@ -105,26 +105,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // App Title and Icon
-                  const Icon(
+                  Icon(
                     Icons.fitness_center,
                     size: 80,
-                    color: Colors.deepPurple,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Join FitTrack',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.deepPurple,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     'Create your account to start tracking',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    style: TextStyle(fontSize: 16, color: Colors.white70),
                   ),
                   const SizedBox(height: 48),
 
@@ -222,13 +222,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           height: 50,
                           child: ElevatedButton(
                             onPressed: _isLoading ? null : _signUp,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.deepPurple,
-                              foregroundColor: Colors.white,
-                            ),
                             child: _isLoading
                                 ? const CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: Colors.black,
                                   )
                                 : const Text(
                                     'Create Account',
@@ -243,14 +239,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 24),
 
                   // Divider
-                  const Row(
+                  Row(
                     children: [
-                      Expanded(child: Divider()),
+                      const Expanded(child: Divider()),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text('OR', style: TextStyle(color: Colors.grey)),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'OR',
+                          style: TextStyle(color: Colors.white54),
+                        ),
                       ),
-                      Expanded(child: Divider()),
+                      const Expanded(child: Divider()),
                     ],
                   ),
 
@@ -273,9 +272,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       label: const Text(
                         'Sign up with Google',
                         style: TextStyle(fontSize: 16),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.grey),
                       ),
                     ),
                   ),

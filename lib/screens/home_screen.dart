@@ -34,10 +34,10 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.fitness_center,
               size: 80,
-              color: Colors.deepPurple,
+              color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(height: 20),
             const Text(
@@ -50,9 +50,9 @@ class HomeScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Workout features will be added here next.',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+              style: TextStyle(fontSize: 14, color: Colors.white54),
             ),
           ],
         ),
