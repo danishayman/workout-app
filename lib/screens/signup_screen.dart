@@ -112,7 +112,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Join Workout Tracker',
+                    'Join FitTrack',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 28,

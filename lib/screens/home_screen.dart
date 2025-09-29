@@ -11,7 +11,7 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Workout Tracker'),
+        title: const Text('FitTrack'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
@@ -41,7 +41,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Welcome to Workout Tracker!',
+              'Welcome to FitTrack!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),

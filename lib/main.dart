@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'widgets/auth_wrapper.dart';
-// import 'firebase_options.dart'; // Uncomment after running `flutterfire configure`
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    // options: DefaultFirebaseOptions.currentPlatform, // Uncomment after running `flutterfire configure`
-  );
+
+  // For testing purposes, we'll initialize Firebase without options first
+  // You'll need to replace the placeholder values in firebase_options.dart
+  // with your actual Firebase project configuration
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    // If Firebase config is not ready, initialize without options for now
+    await Firebase.initializeApp();
+  }
+
   runApp(const MyApp());
 }
 
@@ -18,7 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Workout Tracker',
+      title: 'FitTrack',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
