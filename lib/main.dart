@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'widgets/auth_wrapper.dart';
 import 'firebase_options.dart';
+import 'services/database_initializer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,9 @@ void main() async {
     // If Firebase config is not ready, initialize without options for now
     await Firebase.initializeApp();
   }
+
+  // Initialize database (seed workouts if needed)
+  await DatabaseInitializer.initialize();
 
   runApp(const MyApp());
 }

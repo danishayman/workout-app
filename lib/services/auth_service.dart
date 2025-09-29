@@ -1,9 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../models/user_model.dart';
+import 'user_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final UserService _userService = UserService();
 
   // Get current user
   User? get currentUser => _auth.currentUser;
@@ -33,12 +36,19 @@ class AuthService {
   Future<UserCredential?> registerWithEmailAndPassword({
     required String email,
     required String password,
+    String? displayName,
   }) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      // Create user document in Firestore
+      if (result.user != null) {
+        await _createUserDocument(result.user!, displayName);
+      }
+
       return result;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
@@ -80,6 +90,12 @@ class AuthService {
 
       // Sign in to Firebase with the Google credentials
       UserCredential result = await _auth.signInWithCredential(credential);
+
+      // Create user document if it's a new user
+      if (result.user != null && result.additionalUserInfo?.isNewUser == true) {
+        await _createUserDocument(result.user!);
+      }
+
       return result;
     } on FirebaseAuthException catch (e) {
       // Handle specific Firebase Auth errors
@@ -126,6 +142,29 @@ class AuthService {
       throw _handleAuthException(e);
     } catch (e) {
       throw 'An unexpected error occurred. Please try again.';
+    }
+  }
+
+  // Create user document in Firestore
+  Future<void> _createUserDocument(User user, [String? displayName]) async {
+    try {
+      // Check if user document already exists
+      bool userExists = await _userService.userExists(user.uid);
+      if (userExists) return;
+
+      // Create user model
+      UserModel userModel = UserModel(
+        id: user.uid,
+        name: displayName ?? user.displayName ?? 'User',
+        email: user.email ?? '',
+        createdAt: DateTime.now(),
+      );
+
+      // Save to Firestore
+      await _userService.createUser(userModel);
+    } catch (e) {
+      // Log error but don't throw - user authentication was successful
+      print('Error creating user document: $e');
     }
   }
 
