@@ -50,6 +50,11 @@ class AuthService {
   // Sign in with Google
   Future<UserCredential?> signInWithGoogle() async {
     try {
+      // Check if Google Sign-In is available
+      if (!await _googleSignIn.isSignedIn()) {
+        await _googleSignIn.signOut(); // Clear any cached data
+      }
+
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
@@ -62,6 +67,11 @@ class AuthService {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
+      // Verify we have the required tokens
+      if (googleAuth.accessToken == null || googleAuth.idToken == null) {
+        throw 'Failed to obtain Google authentication tokens. Please try again.';
+      }
+
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -72,9 +82,30 @@ class AuthService {
       UserCredential result = await _auth.signInWithCredential(credential);
       return result;
     } on FirebaseAuthException catch (e) {
-      throw _handleAuthException(e);
+      // Handle specific Firebase Auth errors
+      switch (e.code) {
+        case 'account-exists-with-different-credential':
+          throw 'An account already exists with this email using a different sign-in method.';
+        case 'invalid-credential':
+          throw 'The Google sign-in credentials are invalid. Please try again.';
+        case 'operation-not-allowed':
+          throw 'Google sign-in is not enabled. Please contact support.';
+        case 'user-disabled':
+          throw 'This user account has been disabled.';
+        default:
+          throw _handleAuthException(e);
+      }
     } catch (e) {
-      throw 'An unexpected error occurred during Google sign-in. Please try again.';
+      // Log the actual error for debugging
+      print('Google Sign-In Error: $e');
+
+      if (e.toString().contains('PlatformException')) {
+        throw 'Google Sign-In configuration error. Please check your setup.';
+      } else if (e.toString().contains('network')) {
+        throw 'Network error. Please check your internet connection.';
+      } else {
+        throw 'An unexpected error occurred during Google sign-in: ${e.toString()}';
+      }
     }
   }
 

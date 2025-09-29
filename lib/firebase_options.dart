@@ -53,7 +53,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAVV_BSR1e_kKPRNzINGfsak-FCVvkShgk',
+    apiKey: 'AIzaSyBgAqEezqSR0zn3XIVVSJWBiMOfFAUkXUA',
     appId: '1:349689834481:android:07f7643df8fe535065f250',
     messagingSenderId: '349689834481',
     projectId: 'workout-app-42069',
