@@ -7,6 +7,9 @@ class SessionModel {
   final DateTime date;
   final String? notes;
   final List<ExerciseModel> exercises; // Exercises in this session
+  final Duration? duration; // Total duration of the workout session
+  final DateTime? startTime; // When the workout session started
+  final DateTime? endTime; // When the workout session ended
 
   SessionModel({
     required this.id,
@@ -14,6 +17,9 @@ class SessionModel {
     required this.date,
     this.notes,
     this.exercises = const [],
+    this.duration,
+    this.startTime,
+    this.endTime,
   });
 
   // Create SessionModel from Firebase document
@@ -25,6 +31,15 @@ class SessionModel {
       date: (data['date'] as Timestamp).toDate(),
       notes: data['notes'],
       exercises: [], // Exercises will be loaded separately from subcollection
+      duration: data['durationSeconds'] != null
+          ? Duration(seconds: data['durationSeconds'])
+          : null,
+      startTime: data['startTime'] != null
+          ? (data['startTime'] as Timestamp).toDate()
+          : null,
+      endTime: data['endTime'] != null
+          ? (data['endTime'] as Timestamp).toDate()
+          : null,
     );
   }
 
@@ -34,6 +49,9 @@ class SessionModel {
       'userId': userId,
       'date': Timestamp.fromDate(date),
       if (notes != null) 'notes': notes,
+      if (duration != null) 'durationSeconds': duration!.inSeconds,
+      if (startTime != null) 'startTime': Timestamp.fromDate(startTime!),
+      if (endTime != null) 'endTime': Timestamp.fromDate(endTime!),
     };
   }
 
@@ -44,6 +62,9 @@ class SessionModel {
     DateTime? date,
     String? notes,
     List<ExerciseModel>? exercises,
+    Duration? duration,
+    DateTime? startTime,
+    DateTime? endTime,
   }) {
     return SessionModel(
       id: id ?? this.id,
@@ -51,6 +72,9 @@ class SessionModel {
       date: date ?? this.date,
       notes: notes ?? this.notes,
       exercises: exercises ?? this.exercises,
+      duration: duration ?? this.duration,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
     );
   }
 

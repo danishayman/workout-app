@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'new_session_screen.dart';
+import 'active_session_screen.dart';
 
 class WorkoutScreen extends StatelessWidget {
   const WorkoutScreen({super.key});
@@ -33,7 +33,7 @@ class WorkoutScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const NewSessionScreen(),
+                    builder: (context) => const ActiveSessionScreen(),
                   ),
                 );
               },

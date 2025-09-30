@@ -2,32 +2,81 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/models.dart';
 import 'providers.dart';
 
+// Individual set data
+class ExerciseSet {
+  final int reps;
+  final double? weight;
+  final bool completed;
+
+  ExerciseSet({required this.reps, this.weight, this.completed = false});
+
+  ExerciseSet copyWith({int? reps, double? weight, bool? completed}) {
+    return ExerciseSet(
+      reps: reps ?? this.reps,
+      weight: weight ?? this.weight,
+      completed: completed ?? this.completed,
+    );
+  }
+}
+
 // Selected workout with exercise details
 class SelectedExercise {
   final WorkoutModel workout;
-  int sets;
-  int reps;
-  double? weight;
+  final List<ExerciseSet> exerciseSets;
+  final String? notes;
+  final bool isExpanded;
 
   SelectedExercise({
     required this.workout,
-    this.sets = 1,
-    this.reps = 1,
-    this.weight,
-  });
+    List<ExerciseSet>? exerciseSets,
+    this.notes,
+    this.isExpanded = false,
+  }) : exerciseSets = exerciseSets ?? [ExerciseSet(reps: 8, weight: 0)];
+
+  // Legacy getters for compatibility
+  int get sets => exerciseSets.length;
+  int get reps => exerciseSets.isNotEmpty ? exerciseSets.first.reps : 0;
+  double? get weight =>
+      exerciseSets.isNotEmpty ? exerciseSets.first.weight : null;
 
   SelectedExercise copyWith({
     WorkoutModel? workout,
-    int? sets,
-    int? reps,
-    double? weight,
+    List<ExerciseSet>? exerciseSets,
+    String? notes,
+    bool? isExpanded,
   }) {
     return SelectedExercise(
       workout: workout ?? this.workout,
-      sets: sets ?? this.sets,
-      reps: reps ?? this.reps,
-      weight: weight ?? this.weight,
+      exerciseSets: exerciseSets ?? this.exerciseSets,
+      notes: notes ?? this.notes,
+      isExpanded: isExpanded ?? this.isExpanded,
     );
+  }
+
+  // Add a new set based on the previous set
+  SelectedExercise addSet() {
+    final lastSet = exerciseSets.isNotEmpty
+        ? exerciseSets.last
+        : ExerciseSet(reps: 8, weight: 0);
+    final newSet = ExerciseSet(reps: lastSet.reps, weight: lastSet.weight);
+    return copyWith(exerciseSets: [...exerciseSets, newSet]);
+  }
+
+  // Update a specific set
+  SelectedExercise updateSet(int index, ExerciseSet updatedSet) {
+    final updatedSets = List<ExerciseSet>.from(exerciseSets);
+    if (index < updatedSets.length) {
+      updatedSets[index] = updatedSet;
+    }
+    return copyWith(exerciseSets: updatedSets);
+  }
+
+  // Remove a set
+  SelectedExercise removeSet(int index) {
+    if (exerciseSets.length <= 1) return this; // Keep at least one set
+    final updatedSets = List<ExerciseSet>.from(exerciseSets);
+    updatedSets.removeAt(index);
+    return copyWith(exerciseSets: updatedSets);
   }
 }
 
@@ -97,6 +146,49 @@ class NewSessionNotifier extends StateNotifier<NewSessionState> {
       state.selectedExercises,
     );
     updatedExercises[index] = exercise;
+    state = state.copyWith(selectedExercises: updatedExercises);
+  }
+
+  void toggleExerciseExpansion(int index) {
+    final updatedExercises = List<SelectedExercise>.from(
+      state.selectedExercises,
+    );
+    updatedExercises[index] = updatedExercises[index].copyWith(
+      isExpanded: !updatedExercises[index].isExpanded,
+    );
+    state = state.copyWith(selectedExercises: updatedExercises);
+  }
+
+  void addSetToExercise(int exerciseIndex) {
+    final updatedExercises = List<SelectedExercise>.from(
+      state.selectedExercises,
+    );
+    updatedExercises[exerciseIndex] = updatedExercises[exerciseIndex].addSet();
+    state = state.copyWith(selectedExercises: updatedExercises);
+  }
+
+  void updateExerciseSet(
+    int exerciseIndex,
+    int setIndex,
+    ExerciseSet updatedSet,
+  ) {
+    final updatedExercises = List<SelectedExercise>.from(
+      state.selectedExercises,
+    );
+    updatedExercises[exerciseIndex] = updatedExercises[exerciseIndex].updateSet(
+      setIndex,
+      updatedSet,
+    );
+    state = state.copyWith(selectedExercises: updatedExercises);
+  }
+
+  void updateExerciseNotes(int exerciseIndex, String notes) {
+    final updatedExercises = List<SelectedExercise>.from(
+      state.selectedExercises,
+    );
+    updatedExercises[exerciseIndex] = updatedExercises[exerciseIndex].copyWith(
+      notes: notes,
+    );
     state = state.copyWith(selectedExercises: updatedExercises);
   }
 
