@@ -172,7 +172,35 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen> {
           icon: const Icon(Icons.expand_more, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Icon(Icons.timer, color: Colors.white),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Circular Timer
+            Container(
+              width: 60,
+              height: 30,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.timer, color: Colors.white, size: 16),
+                  const SizedBox(width: 4),
+                  Text(
+                    _formatDuration(_duration),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
         centerTitle: true,
         actions: [
           TextButton(
@@ -365,15 +393,16 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen> {
                 // Add Exercises Button
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 56,
                   child: ElevatedButton(
                     onPressed: _navigateToWorkoutSelection,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                        borderRadius: BorderRadius.circular(28),
                       ),
+                      elevation: 0,
                     ),
                     child: const Text(
                       'Add Exercises',
@@ -388,7 +417,7 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen> {
                 // More Button
                 SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 56,
                   child: ElevatedButton(
                     onPressed: () {
                       // TODO: Implement more options (notes, rest timer, etc.)
@@ -402,8 +431,9 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen> {
                       backgroundColor: Colors.grey[800],
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                        borderRadius: BorderRadius.circular(28),
                       ),
+                      elevation: 0,
                     ),
                     child: const Text(
                       'More',
