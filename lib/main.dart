@@ -50,8 +50,6 @@ class MyApp extends StatelessWidget {
           onSecondary: Colors.black,
           surface: Color(0xFF121212),
           onSurface: Colors.white,
-          background: Color(0xFF000000),
-          onBackground: Colors.white,
           error: Colors.redAccent,
           onError: Colors.black,
         ),

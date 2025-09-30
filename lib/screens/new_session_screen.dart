@@ -184,7 +184,7 @@ class NewSessionScreen extends ConsumerWidget {
                       sessionNotifier.updateExercise(index, updatedExercise),
                   onRemove: () => sessionNotifier.removeExercise(index),
                 );
-              }).toList(),
+              }),
 
             // Error message
             if (sessionState.error != null)
