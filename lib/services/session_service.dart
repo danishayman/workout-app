@@ -326,4 +326,190 @@ class SessionService {
       throw 'Failed to get latest user session: ${e.toString()}';
     }
   }
+
+  // Get weekly statistics for user
+  Future<WeeklyStats> getWeeklyStats(String userId) async {
+    try {
+      // Calculate the start of the current week (Monday)
+      DateTime now = DateTime.now();
+      DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+      startOfWeek = DateTime(
+        startOfWeek.year,
+        startOfWeek.month,
+        startOfWeek.day,
+      );
+
+      // Calculate the end of the week (Sunday)
+      DateTime endOfWeek = startOfWeek.add(
+        const Duration(days: 6, hours: 23, minutes: 59, seconds: 59),
+      );
+
+      // Get sessions for this week
+      List<SessionModel> sessions = await getSessionsByDateRange(
+        userId,
+        startOfWeek,
+        endOfWeek,
+      );
+
+      // Calculate stats
+      int workoutCount = sessions.length;
+      Duration totalDuration = Duration.zero;
+      double totalVolume = 0;
+
+      for (SessionModel session in sessions) {
+        // Add duration if available
+        if (session.duration != null) {
+          totalDuration += session.duration!;
+        }
+
+        // Get exercises for this session and calculate volume
+        List<ExerciseModel> exercises = await getSessionExercises(session.id);
+        for (ExerciseModel exercise in exercises) {
+          if (exercise.weight != null) {
+            totalVolume += (exercise.weight! * exercise.sets * exercise.reps);
+          }
+        }
+      }
+
+      // Get previous week stats for comparison
+      DateTime prevWeekStart = startOfWeek.subtract(const Duration(days: 7));
+      DateTime prevWeekEnd = startOfWeek.subtract(const Duration(seconds: 1));
+
+      List<SessionModel> prevWeekSessions = await getSessionsByDateRange(
+        userId,
+        prevWeekStart,
+        prevWeekEnd,
+      );
+
+      int prevWorkoutCount = prevWeekSessions.length;
+      Duration prevTotalDuration = Duration.zero;
+      double prevTotalVolume = 0;
+
+      for (SessionModel session in prevWeekSessions) {
+        if (session.duration != null) {
+          prevTotalDuration += session.duration!;
+        }
+        List<ExerciseModel> exercises = await getSessionExercises(session.id);
+        for (ExerciseModel exercise in exercises) {
+          if (exercise.weight != null) {
+            prevTotalVolume +=
+                (exercise.weight! * exercise.sets * exercise.reps);
+          }
+        }
+      }
+
+      return WeeklyStats(
+        workoutCount: workoutCount,
+        totalDuration: totalDuration,
+        totalVolume: totalVolume,
+        previousWorkoutCount: prevWorkoutCount,
+        previousDuration: prevTotalDuration,
+        previousVolume: prevTotalVolume,
+      );
+    } catch (e) {
+      throw 'Failed to get weekly stats: ${e.toString()}';
+    }
+  }
+}
+
+// Weekly stats model
+class WeeklyStats {
+  final int workoutCount;
+  final Duration totalDuration;
+  final double totalVolume;
+  final int previousWorkoutCount;
+  final Duration previousDuration;
+  final double previousVolume;
+
+  WeeklyStats({
+    required this.workoutCount,
+    required this.totalDuration,
+    required this.totalVolume,
+    required this.previousWorkoutCount,
+    required this.previousDuration,
+    required this.previousVolume,
+  });
+
+  // Calculate changes from previous week
+  int get workoutChange => workoutCount - previousWorkoutCount;
+  Duration get durationChange => totalDuration - previousDuration;
+  double get volumeChange => totalVolume - previousVolume;
+
+  // Format duration as "Xh Ym"
+  String get formattedDuration {
+    int hours = totalDuration.inHours;
+    int minutes = totalDuration.inMinutes.remainder(60);
+
+    if (hours > 0) {
+      return '${hours}h ${minutes}m';
+    } else {
+      return '${minutes}m';
+    }
+  }
+
+  // Format previous duration as "Xh Ym"
+  String get formattedPreviousDuration {
+    int hours = previousDuration.inHours;
+    int minutes = previousDuration.inMinutes.remainder(60);
+
+    if (hours > 0) {
+      return '${hours}h ${minutes}m';
+    } else {
+      return '${minutes}m';
+    }
+  }
+
+  // Format duration change
+  String get formattedDurationChange {
+    Duration change = durationChange;
+    int hours = change.inHours;
+    int minutes = change.inMinutes.remainder(60);
+
+    String prefix = change.isNegative ? '' : '';
+    if (hours != 0) {
+      return '$prefix${hours}h ${minutes.abs()}m';
+    } else {
+      return '$prefix${minutes}m';
+    }
+  }
+
+  // Format volume as "X XXX kg"
+  String get formattedVolume {
+    if (totalVolume >= 1000) {
+      // Format with space as thousands separator
+      String volumeStr = totalVolume.toInt().toString();
+      String formatted = '';
+      int count = 0;
+      for (int i = volumeStr.length - 1; i >= 0; i--) {
+        if (count == 3) {
+          formatted = ' $formatted';
+          count = 0;
+        }
+        formatted = volumeStr[i] + formatted;
+        count++;
+      }
+      return '${formatted}kg';
+    }
+    return '${totalVolume.toInt()}kg';
+  }
+
+  // Format volume change
+  String get formattedVolumeChange {
+    double change = volumeChange;
+    if (change >= 1000) {
+      String volumeStr = change.abs().toInt().toString();
+      String formatted = '';
+      int count = 0;
+      for (int i = volumeStr.length - 1; i >= 0; i--) {
+        if (count == 3) {
+          formatted = ' $formatted';
+          count = 0;
+        }
+        formatted = volumeStr[i] + formatted;
+        count++;
+      }
+      return '${formatted} kg';
+    }
+    return '${change.toInt()} kg';
+  }
 }

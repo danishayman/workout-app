@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/services.dart';
+import '../services/session_service.dart';
 import '../models/models.dart';
 
 // Service providers
@@ -56,3 +57,12 @@ final userSessionsStreamProvider =
       final sessionService = ref.watch(sessionServiceProvider);
       return sessionService.getUserSessionsStream(userId);
     });
+
+// Weekly stats provider
+final weeklyStatsProvider = FutureProvider.family<WeeklyStats, String>((
+  ref,
+  userId,
+) async {
+  final sessionService = ref.watch(sessionServiceProvider);
+  return await sessionService.getWeeklyStats(userId);
+});
