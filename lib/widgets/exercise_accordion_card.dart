@@ -195,7 +195,7 @@ class _ExerciseAccordionCardState extends State<ExerciseAccordionCard> {
             final index = entry.key;
             final set = entry.value;
             return _buildSetRow(index, set);
-          }).toList(),
+          }),
 
           const SizedBox(height: 16),
 

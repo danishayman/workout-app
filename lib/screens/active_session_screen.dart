@@ -17,13 +17,10 @@ class ActiveSessionScreen extends ConsumerStatefulWidget {
 
 class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen> {
   Timer? _timer;
-  Duration _duration = Duration.zero;
-  DateTime? _startTime;
 
   @override
   void initState() {
     super.initState();
-    _startTime = DateTime.now();
     _startTimer();
   }
 
@@ -37,10 +34,15 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() {
-          _duration = Duration(seconds: _duration.inSeconds + 1);
+          // Force rebuild to update the timer display
         });
       }
     });
+  }
+
+  Duration _getCurrentDuration(DateTime? startTime) {
+    if (startTime == null) return Duration.zero;
+    return DateTime.now().difference(startTime);
   }
 
   String _formatDuration(Duration duration) {
@@ -100,15 +102,19 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen> {
       sessionNotifier.setLoading(true);
       sessionNotifier.setError(null);
 
+      final startTime = sessionState.startTime ?? DateTime.now();
+      final endTime = DateTime.now();
+      final duration = endTime.difference(startTime);
+
       // Create session with timing data
       final session = SessionModel(
         id: '',
         userId: currentUser!.uid,
-        date: _startTime ?? DateTime.now(),
+        date: startTime,
         notes: sessionState.notes.isEmpty ? null : sessionState.notes,
-        duration: _duration,
-        startTime: _startTime,
-        endTime: DateTime.now(),
+        duration: duration,
+        startTime: startTime,
+        endTime: endTime,
       );
 
       final sessionId = await sessionService.createSession(session);
@@ -162,6 +168,7 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen> {
     final sessionState = ref.watch(newSessionProvider);
     final totalVolume = _calculateTotalVolume(sessionState.selectedExercises);
     final totalSets = _calculateTotalSets(sessionState.selectedExercises);
+    final currentDuration = _getCurrentDuration(sessionState.startTime);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -189,7 +196,7 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen> {
                   const Icon(Icons.timer, color: Colors.white, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    _formatDuration(_duration),
+                    _formatDuration(currentDuration),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -248,7 +255,7 @@ class _ActiveSessionScreenState extends ConsumerState<ActiveSessionScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        _formatDuration(_duration),
+                        _formatDuration(currentDuration),
                         style: const TextStyle(
                           color: Colors.blue,
                           fontSize: 18,

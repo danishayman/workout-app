@@ -87,6 +87,7 @@ class NewSessionState {
   final List<SelectedExercise> selectedExercises;
   final bool isLoading;
   final String? error;
+  final DateTime? startTime; // When the workout session started
 
   NewSessionState({
     required this.date,
@@ -94,6 +95,7 @@ class NewSessionState {
     this.selectedExercises = const [],
     this.isLoading = false,
     this.error,
+    this.startTime,
   });
 
   NewSessionState copyWith({
@@ -102,6 +104,7 @@ class NewSessionState {
     List<SelectedExercise>? selectedExercises,
     bool? isLoading,
     String? error,
+    DateTime? startTime,
   }) {
     return NewSessionState(
       date: date ?? this.date,
@@ -109,6 +112,7 @@ class NewSessionState {
       selectedExercises: selectedExercises ?? this.selectedExercises,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
+      startTime: startTime ?? this.startTime,
     );
   }
 }
@@ -130,7 +134,16 @@ class NewSessionNotifier extends StateNotifier<NewSessionState> {
         .map((workout) => SelectedExercise(workout: workout))
         .toList();
     final updatedExercises = [...state.selectedExercises, ...newExercises];
-    state = state.copyWith(selectedExercises: updatedExercises);
+
+    // Set start time when first exercise is added
+    final startTime = state.selectedExercises.isEmpty
+        ? DateTime.now()
+        : state.startTime;
+
+    state = state.copyWith(
+      selectedExercises: updatedExercises,
+      startTime: startTime,
+    );
   }
 
   void removeExercise(int index) {
