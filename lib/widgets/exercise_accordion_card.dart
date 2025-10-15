@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../providers/session_providers.dart';
+import '../screens/exercise_detail_screen.dart';
 
 class ExerciseAccordionCard extends StatefulWidget {
   final SelectedExercise exercise;
@@ -62,27 +63,38 @@ class _ExerciseAccordionCardState extends State<ExerciseAccordionCard> {
         child: Row(
           children: [
             // Exercise Image Placeholder
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: Colors.grey[800],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  'assets/images/bent_over_row.png', // This would be dynamic based on exercise
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(
-                      Icons.fitness_center,
-                      color: Colors.white54,
-                      size: 24,
-                    );
-                  },
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ExerciseDetailScreen(workout: widget.exercise.workout),
+                  ),
+                );
+              },
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.grey[800],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    'assets/images/bent_over_row.png', // This would be dynamic based on exercise
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.fitness_center,
+                        color: Colors.white54,
+                        size: 24,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
