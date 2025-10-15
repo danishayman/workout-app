@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/providers.dart';
+import 'admin_video_upload_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -81,6 +82,18 @@ class ProfileScreen extends ConsumerWidget {
               title: 'Edit Profile',
               onTap: () {
                 // TODO: Navigate to edit profile
+              },
+            ),
+            _buildMenuItem(
+              icon: Icons.video_library,
+              title: 'Manage Exercise Videos',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AdminVideoUploadScreen(),
+                  ),
+                );
               },
             ),
             _buildMenuItem(

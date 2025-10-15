@@ -5,12 +5,16 @@ class WorkoutModel {
   final String name;
   final String category;
   final String? description;
+  final String? videoUrl;
+  final String? thumbnailUrl;
 
   WorkoutModel({
     required this.id,
     required this.name,
     required this.category,
     this.description,
+    this.videoUrl,
+    this.thumbnailUrl,
   });
 
   // Create WorkoutModel from Firebase document
@@ -21,6 +25,8 @@ class WorkoutModel {
       name: data['name'] ?? '',
       category: data['category'] ?? '',
       description: data['description'],
+      videoUrl: data['videoUrl'],
+      thumbnailUrl: data['thumbnailUrl'],
     );
   }
 
@@ -30,6 +36,8 @@ class WorkoutModel {
       'name': name,
       'category': category,
       if (description != null) 'description': description,
+      if (videoUrl != null) 'videoUrl': videoUrl,
+      if (thumbnailUrl != null) 'thumbnailUrl': thumbnailUrl,
     };
   }
 
@@ -39,12 +47,16 @@ class WorkoutModel {
     String? name,
     String? category,
     String? description,
+    String? videoUrl,
+    String? thumbnailUrl,
   }) {
     return WorkoutModel(
       id: id ?? this.id,
       name: name ?? this.name,
       category: category ?? this.category,
       description: description ?? this.description,
+      videoUrl: videoUrl ?? this.videoUrl,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
     );
   }
 

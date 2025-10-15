@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/workout_model.dart';
+import '../widgets/exercise_video_player.dart';
 
 class ExerciseDetailScreen extends StatelessWidget {
   final WorkoutModel workout;
@@ -63,7 +64,7 @@ class ExerciseDetailScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Video Placeholder
+          // Video Player
           Container(
             width: double.infinity,
             height: 250,
@@ -72,67 +73,70 @@ class ExerciseDetailScreen extends StatelessWidget {
               color: Colors.grey[900],
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                // Placeholder for exercise image/video
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey[800],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/images/bent_over_row.png',
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Center(
-                          child: Icon(
-                            Icons.fitness_center,
-                            color: Colors.white54,
-                            size: 64,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: workout.videoUrl != null && workout.videoUrl!.isNotEmpty
+                  ? ExerciseVideoPlayer(
+                      videoUrl: workout.videoUrl!,
+                      autoPlay: false,
+                      looping: true,
+                    )
+                  : Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // Placeholder for exercise image
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[800],
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        );
-                      },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              'assets/images/bent_over_row.png',
+                              width: double.infinity,
+                              height: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Center(
+                                  child: Icon(
+                                    Icons.fitness_center,
+                                    color: Colors.white54,
+                                    size: 64,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        // No video available overlay
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.videocam_off,
+                                color: Colors.white54,
+                                size: 48,
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Video not available',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-                // Play button overlay
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.7),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.play_arrow,
-                    color: Colors.white,
-                    size: 40,
-                  ),
-                ),
-                // Fullscreen button
-                Positioned(
-                  bottom: 12,
-                  right: 12,
-                  child: Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(
-                      Icons.fullscreen,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
 
